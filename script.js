@@ -7,6 +7,171 @@ var previousSearch = '';
 NodeList.prototype.forEach = Array.prototype.forEach; // fix for < iOS 9.3
 
 /*
+ * Init and Theme Management
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme
+    initTheme();
+    
+    // Set up theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    
+    // Set up export button
+    document.getElementById('export-button').addEventListener('click', showExportModal);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        var modal = document.getElementById('export-modal');
+        if (event.target === modal) {
+            closeExportModal();
+        }
+    });
+});
+
+function initTheme() {
+    // Check for saved theme preference or use system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.className = savedTheme;
+    } else {
+        // Check if user prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.className = 'dark-mode';
+        } else {
+            document.documentElement.className = 'light-mode';
+        }
+    }
+}
+
+function toggleTheme() {
+    if (document.documentElement.className === 'dark-mode') {
+        document.documentElement.className = 'light-mode';
+        localStorage.setItem('theme', 'light-mode');
+    } else {
+        document.documentElement.className = 'dark-mode';
+        localStorage.setItem('theme', 'dark-mode');
+    }
+}
+
+/*
+ * Export Functionality
+ */
+
+function showExportModal() {
+    const modal = document.getElementById('export-modal');
+    const countElement = document.getElementById('export-count');
+    const previewElement = document.getElementById('export-preview');
+    
+    // Update count
+    countElement.textContent = DB_result.length;
+    
+    // Generate preview (first 5 items)
+    const previewData = generateExportData(5);
+    previewElement.textContent = JSON.stringify(previewData, null, 2);
+    
+    // Show modal
+    modal.style.display = 'flex';
+}
+
+function closeExportModal() {
+    document.getElementById('export-modal').style.display = 'none';
+}
+
+function generateExportData(limit) {
+    const count = limit ? Math.min(limit, DB_result.length) : DB_result.length;
+    const data = [];
+    
+    for (let i = 0; i < count; i++) {
+        const idx = DB_result[i];
+        const entry = entryToDict(DB[idx]);
+        
+        data.push({
+            title: entry.title,
+            bundleId: entry.bundleId,
+            version: entry.version,
+            minOS: versionToStr(entry.minOS),
+            platform: platformToStr(entry.platform),
+            size: entry.size,
+            downloadUrl: entry.ipa_url
+        });
+    }
+    
+    return data;
+}
+
+function exportToCSV() {
+    const data = generateExportData();
+    if (data.length === 0) {
+        alert('No data to export');
+        return;
+    }
+    
+    // Create CSV header
+    let csv = 'Title,Bundle ID,Version,Min OS,Platform,Size,Download URL\n';
+    
+    // Add rows
+    data.forEach(function(item) {
+        // Escape fields that might contain commas
+        const escapedTitle = `"${item.title.replace(/"/g, '""')}"`;
+        csv += `${escapedTitle},${item.bundleId},${item.version},${item.minOS},${item.platform},${humanSize(item.size)},${item.downloadUrl}\n`;
+    });
+    
+    // Download file
+    downloadFile(csv, 'iparchive_export.csv', 'text/csv');
+}
+
+function exportToJSON() {
+    const data = generateExportData();
+    if (data.length === 0) {
+        alert('No data to export');
+        return;
+    }
+    
+    const json = JSON.stringify(data, null, 2);
+    downloadFile(json, 'iparchive_export.json', 'application/json');
+}
+
+function copyToClipboard() {
+    const data = generateExportData();
+    if (data.length === 0) {
+        alert('No data to export');
+        return;
+    }
+    
+    const text = JSON.stringify(data, null, 2);
+    
+    // Create a temporary textarea element
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    
+    // Select and copy the text
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Remove the textarea
+    document.body.removeChild(textarea);
+    
+    // Show success message
+    alert('Data copied to clipboard');
+    closeExportModal();
+}
+
+function downloadFile(content, fileName, contentType) {
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    closeExportModal();
+}
+
+/*
  * Init
  */
 
