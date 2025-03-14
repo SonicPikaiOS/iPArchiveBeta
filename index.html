@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light-mode">
 
 <head>
 	<meta charset="utf-8">
@@ -17,7 +17,14 @@
 		<div class="container">
 			<div class="header-content">
 				<h1>iPArchive</h1>
-				<button class="btn btn-primary" onclick="randomIPA()">Random App</button>
+				<div class="header-actions">
+					<button id="theme-toggle" class="btn btn-icon" aria-label="Toggle dark mode">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+					</button>
+					<button id="export-button" class="btn btn-secondary">Export</button>
+					<button class="btn btn-primary" onclick="randomIPA()">Random App</button>
+				</div>
 			</div>
 		</div>
 	</header>
@@ -80,6 +87,27 @@
 			<div id="content" class="content">JavaScript disabled?</div>
 		</section>
 	</main>
+
+	<div id="export-modal" class="modal" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>Export Results</h3>
+				<button class="close-button" onclick="closeExportModal()">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p>Export current search results (<span id="export-count">0</span> apps)</p>
+				<div class="export-options">
+					<button class="btn btn-primary" onclick="exportToCSV()">Export to CSV</button>
+					<button class="btn btn-primary" onclick="exportToJSON()">Export to JSON</button>
+					<button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+				</div>
+				<div class="export-preview">
+					<h4>Preview:</h4>
+					<pre id="export-preview"></pre>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<footer class="footer">
 		<div class="container">
