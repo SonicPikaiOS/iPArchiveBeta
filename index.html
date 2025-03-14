@@ -35,21 +35,21 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="search">Search</label>
-                            <input type="text" id="search" class="form-control" placeholder="Search...">
+                            <input type="text" id="search" class="form-control" placeholder="App name or keyword">
                         </div>
                         <div class="form-group">
                             <label for="bundleid">Bundle ID</label>
-                            <input type="text" id="bundleid" class="form-control" placeholder="com.tomtom.europe">
+                            <input type="text" id="bundleid" class="form-control" placeholder="com.example.app">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="minos">Min iOS</label>
-                            <input type="text" id="minos" class="form-control" placeholder="6.1.3">
+                            <input type="text" id="minos" class="form-control" placeholder="e.g. 10.0">
                         </div>
                         <div class="form-group">
                             <label for="maxos">Max iOS</label>
-                            <input type="text" id="maxos" class="form-control" placeholder="8.3.1">
+                            <input type="text" id="maxos" class="form-control" placeholder="e.g. 14.0">
                         </div>
                         <div class="form-group">
                             <label for="device">Device</label>
@@ -57,6 +57,8 @@
                                 <option value="">All</option>
                                 <option value="1">iPhone</option>
                                 <option value="2">iPad</option>
+                                <option value="3">TV</option>
+                                <option value="4">Watch</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -85,7 +87,7 @@
 
 	<footer class="footer">
 		<div class="container">
-			<p>iPArchive - Made with <3 by SonicPika</p>
+			<p>iPArchive - Archive of iOS IPA files</p>
 		</div>
 	</footer>
 
@@ -93,7 +95,7 @@
     <div id="templates" style="display: none;">
         <div class="entry">
             <div class="entry-icon">
-                <img src="$IMG" alt="App icon" onerror="this.src='placeholder.jpg'">
+                <img src="$IMG" alt="App icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22><rect width=%2280%22 height=%2280%22 fill=%22%23f0f0f0%22/><text x=%2240%22 y=%2240%22 font-family=%22system-ui%22 font-size=%2212%22 fill=%22%23666%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>No Icon</text></svg>'">
                 <div class="app-badges">
                     <span class="badge badge-os">iOS $MINOS+</span>
                     <span class="badge badge-platform">$PLATFORM</span>
@@ -113,7 +115,7 @@
 
         <div class="full">
             <div class="entry-icon">
-                <img src="$IMG" alt="App icon" onerror="this.src='placeholder.jpg'">
+                <img src="$IMG" alt="App icon" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22><rect width=%2280%22 height=%2280%22 fill=%22%23f0f0f0%22/><text x=%2240%22 y=%2240%22 font-family=%22system-ui%22 font-size=%2212%22 fill=%22%23666%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>No Icon</text></svg>'">
                 <div class="app-badges">
                     <span class="badge badge-os">iOS $MINOS+</span>
                     <span class="badge badge-platform">$PLATFORM</span>
