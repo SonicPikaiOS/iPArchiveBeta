@@ -4,7 +4,6 @@ var baseUrls = {};
 var PER_PAGE = 30;
 var isInitial = true;
 var previousSearch = '';
-var plistServerUrl = ''; // will append ?d=<data>
 NodeList.prototype.forEach = Array.prototype.forEach; // fix for < iOS 9.3
 
 /*
@@ -31,7 +30,7 @@ function loadFile(url, onErrFn, fn) {
 function loadDB() {
     var config = null;
     try {
-        config = loadConfig(true);
+        config = loadConfig();
     } catch (error) {
         alert(error);
     }
@@ -49,7 +48,7 @@ function loadDB() {
     });
 }
 
-function loadConfig(chkServer) {
+function loadConfig() {
     if (!location.hash) {
         return; // keep default values
     }
@@ -66,9 +65,6 @@ function loadConfig(chkServer) {
             input.value = data[input.id] || '';
         }
     });
-    if (chkServer && data['plistServer']) {
-        setPlistGen();
-    }
     return data;
 }
 
@@ -135,7 +131,7 @@ function applySearch() {
 
 function restoreSearch() {
     location.hash = previousSearch;
-    const conf = loadConfig(false);
+    const conf = loadConfig();
     previousSearch = '';
     if (conf.random) {
         randomIPA(conf.random);
@@ -173,7 +169,7 @@ function urlsToImgs(redirectUrl, list) {
     const template = getTemplate('.screenshot');
     var rv = '<div class="carousel">';
     for (var i = 0; i < list.length; i++) {
-        rv += renderTemplate(template, { $REF: list[i], $URL: redirectUrl + list[i] });
+        rv += renderTemplate(template, { $REF: list[i], $URL: list[i] });
     }
     return rv + '</div>';
 }
@@ -198,43 +194,43 @@ function randomIPA(specificId) {
     output.lastElementChild.className += ' single';
     output.innerHTML += renderTemplate(getTemplate('.randomAction'), { $IDX: idx });
 
-    if (!plistServerUrl) {
-        output.innerHTML += getTemplate('.no-itunes');
-        return;
-    }
-    // Append iTunes info to result
-    const redirectUrl = plistServerUrl + '?r='
+    // Try to fetch iTunes info directly
     const iTunesUrl = 'https://itunes.apple.com/lookup?bundleId=' + entry.bundleId;
-    loadFile(redirectUrl + iTunesUrl, console.error, function (data) {
-        const obj = JSON.parse(data);
-        if (!obj || obj.resultCount < 1) {
-            output.innerHTML += '<p class="no-itunes">No iTunes results.</p>';
-            return;
-        }
-        const info = obj.results[0];
-        const imgs1 = info.screenshotUrls;
-        const imgs2 = info.ipadScreenshotUrls;
-        const device = document.getElementById('device').value || 255;
+    loadFile(iTunesUrl, console.error, function (data) {
+        try {
+            const obj = JSON.parse(data);
+            if (!obj || obj.resultCount < 1) {
+                output.innerHTML += '<p class="no-itunes">No iTunes results available.</p>';
+                return;
+            }
+            const info = obj.results[0];
+            const imgs1 = info.screenshotUrls || [];
+            const imgs2 = info.ipadScreenshotUrls || [];
+            const device = document.getElementById('device').value || 255;
 
-        var imgStr = '';
-        if (imgs1 && imgs1.length > 0 && device & 1) {
-            imgStr += '<p>iPhone Screenshots:</p>' + urlsToImgs(redirectUrl, imgs1);
-        }
-        if (imgs2 && imgs2.length > 0 && device & 2) {
-            imgStr += '<p>iPad Screenshots:</p>' + urlsToImgs(redirectUrl, imgs2);
-        }
+            var imgStr = '';
+            if (imgs1 && imgs1.length > 0 && device & 1) {
+                imgStr += '<p>iPhone Screenshots:</p>' + urlsToImgs('', imgs1);
+            }
+            if (imgs2 && imgs2.length > 0 && device & 2) {
+                imgStr += '<p>iPad Screenshots:</p>' + urlsToImgs('', imgs2);
+            }
 
-        output.innerHTML += renderTemplate(getTemplate('.itunes'), {
-            $VERSION: info.version,
-            $PRICE: info.formattedPrice,
-            $RATING: info.averageUserRating.toFixed(1),
-            $ADVISORY: info.contentAdvisoryRating,
-            $DATE: info.currentVersionReleaseDate,
-            $GENRES: (info.genres || []).join(', '),
-            $URL: info.trackViewUrl,
-            $IMG: imgStr,
-            $DESCRIPTION: info.description,
-        });
+            output.innerHTML += renderTemplate(getTemplate('.itunes'), {
+                $VERSION: info.version || 'Unknown',
+                $PRICE: info.formattedPrice || 'Unknown',
+                $RATING: info.averageUserRating ? info.averageUserRating.toFixed(1) : 'N/A',
+                $ADVISORY: info.contentAdvisoryRating || 'Unknown',
+                $DATE: info.currentVersionReleaseDate || 'Unknown',
+                $GENRES: (info.genres || []).join(', '),
+                $URL: info.trackViewUrl || '#',
+                $IMG: imgStr,
+                $DESCRIPTION: info.description || 'No description available.',
+            });
+        } catch (error) {
+            console.error('Error parsing iTunes data:', error);
+            output.innerHTML += '<p class="no-itunes">Error fetching iTunes data.</p>';
+        }
     });
 }
 
@@ -381,70 +377,6 @@ function paginationFull(page, pages) {
     return rv + '</div>';
 }
 
-/*
- * Install on iDevice
- */
-
-function setPlistGen() {
-    const testURL = document.getElementById('plistServer').value;
-    const scheme = testURL.slice(0, 7);
-    if (scheme != 'http://' && scheme != 'https:/') {
-        alert('URL must start with http:// or https://.');
-        return;
-    }
-    loadFile(testURL + '?d=' + btoa('{"u":"1"}'), alert, function (data) {
-        if (data.trim().slice(0, 6) != '<?xml ') {
-            alert('Server did not respond with a Plist file.');
-            return;
-        }
-        plistServerUrl = testURL;
-        hideOverlay();
-        saveConfig();
-    });
-}
-
 function urlWithSlash(url) {
     return url.toString().slice(-1) === '/' ? url : (url + '/');
-}
-
-function utoa(data) {
-    return btoa(unescape(encodeURIComponent(data)));
-}
-
-// Show overlay function
-function showOverlay() {
-    document.getElementById('overlay').style.display = 'flex';
-}
-
-// Hide overlay function
-function hideOverlay() {
-    document.getElementById('overlay').style.display = 'none';
-}
-
-// Modified installIPA function
-function installIPA(idx) {
-    if (!plistServerUrl) {
-        showOverlay();
-        return;
-    }
-    const thisServerUrl = location.href.replace(location.hash, '');
-    const entry = entryToDict(DB[idx]);
-    const json = JSON.stringify({
-        u: validUrl(entry.ipa_url),
-        n: entry.title,
-        b: entry.bundleId,
-        v: entry.version.split(' ')[0],
-        i: urlWithSlash(thisServerUrl) + entry.img_url,
-    }, null, 0)
-    var b64 = '';
-    try {
-        b64 = btoa(json);
-    } catch (error) {
-        b64 = utoa(json);
-    }
-    while (b64.slice(-1) === '=') {
-        b64 = b64.slice(0, -1);
-    }
-    const plistUrl = plistServerUrl + '%3Fd%3D' + b64; // url encoded "?d="
-    window.open('itms-services://?action=download-manifest&url=' + plistUrl);
 }
