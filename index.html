@@ -1,172 +1,202 @@
 <!DOCTYPE html>
-<html lang="en" class="light-mode">
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0">
 	<meta name="referrer" content="no-referrer">
-	<title>iPArchive</title>
+	<title>iPArchive - iOS IPA Archive</title>
 	<link rel="shortcut icon" href="./favicon.ico">
 	<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 	<link rel="stylesheet" href="style.css">
 	<script src='script.js'></script>
 </head>
 
-<body>
+<body onload="loadDB()">
 	<header>
 		<div class="container">
 			<div class="header-content">
 				<h1>iPArchive</h1>
 				<div class="header-actions">
-					<button id="theme-toggle" class="btn btn-icon" aria-label="Toggle dark mode">
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-					</button>
-					<button id="export-button" class="btn btn-secondary">Export</button>
-					<button class="btn btn-primary" onclick="randomIPA()">Random App</button>
-				</div>
+                    <button class="btn btn-secondary" onclick="randomIPA()">Random App</button>
+                    <button class="btn btn-primary" onclick="showFavorites()">My Favorites</button>
+                </div>
 			</div>
 		</div>
 	</header>
 
 	<main class="container">
 		<section class="search-section">
-			<form class="search-form" onsubmit="event.preventDefault(); searchIPA(); return false;" autocomplete="off">
+			<form class="search-form" onsubmit="searchIPA(); return false;" autocomplete="off">
 				<input id="page" hidden>
 				<input id="minid" hidden>
 				
 				<div class="form-row">
 					<div class="form-group">
 						<label for="search">Search</label>
-						<input id="search" class="form-control" placeholder="App name or keyword">
+						<input type="text" id="search" class="form-control" placeholder="App name or keyword">
 					</div>
 					
 					<div class="form-group">
 						<label for="bundleid">Bundle ID</label>
-						<input id="bundleid" class="form-control" placeholder="com.gameloft.">
+						<input type="text" id="bundleid" class="form-control" placeholder="com.example.app">
 					</div>
 				</div>
 				
 				<div class="form-row">
 					<div class="form-group">
-						<label for="minos">Min OS</label>
-						<input id="minos" class="form-control" placeholder="6.1.3">
+						<label for="minos">Min iOS Version</label>
+						<input type="text" id="minos" class="form-control" placeholder="e.g. 10.0">
 					</div>
 					
 					<div class="form-group">
-						<label for="maxos">Max OS</label>
-						<input id="maxos" class="form-control" placeholder="8.3">
+						<label for="maxos">Max iOS Version</label>
+						<input type="text" id="maxos" class="form-control" placeholder="e.g. 14.0">
 					</div>
 					
 					<div class="form-group">
 						<label for="device">Device</label>
 						<select id="device" class="form-control">
-							<option value="">Any</option>
+							<option value="">All Devices</option>
 							<option value="1">iPhone</option>
 							<option value="2">iPad</option>
-							<option value="3">TV</option>
-							<option value="4">Watch</option>
+							<option value="3">Apple TV</option>
+							<option value="4">Apple Watch</option>
 						</select>
 					</div>
 					
-					<div class="form-group checkbox-group">
-						<label for="unique" class="checkbox-label">
-							<input id="unique" type="checkbox" checked>
-							<span>Unique</span>
-						</label>
-					</div>
+					<div class="form-group">
+                        <label for="minid">Min ID</label>
+                        <input type="text" id="minid" class="form-control" placeholder="Minimum ID">
+                    </div>
 				</div>
 				
-				<div class="form-actions">
-					<button type="submit" class="btn btn-primary">Search</button>
+				<!-- New Size Filters -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="size_min">Min Size (MB)</label>
+                        <input type="number" id="size_min" class="form-control" placeholder="e.g. 10">
+                    </div>
+                    <div class="form-group">
+                        <label for="size_max">Max Size (MB)</label>
+                        <input type="number" id="size_max" class="form-control" placeholder="e.g. 500">
+                    </div>
+                </div>
+				
+				<div class="form-row">
+					<div class="form-group checkbox-group">
+						<label class="checkbox-label">
+                            <input type="checkbox" id="unique"> Show only unique bundle IDs
+                        </label>
+					</div>
+					<input type="hidden" id="page">
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary">Search</button>
+					</div>
 				</div>
 			</form>
 		</section>
+		
+		<!-- Search History Section -->
+        <section id="search-history" class="search-history">
+            <p>No recent searches</p>
+        </section>
 
 		<section class="results-section">
-			<div id="content" class="content">JavaScript disabled?</div>
+			<div id="content" class="content">
+                <h3>Welcome to iPArchive</h3>
+                <p>Use the search form above to find iOS apps or click "Random App" to discover something new.</p>
+            </div>
 		</section>
 	</main>
 
-	<div id="export-modal" class="modal" style="display: none;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h3>Export Results</h3>
-				<button class="close-button" onclick="closeExportModal()">&times;</button>
-			</div>
-			<div class="modal-body">
-				<p>Export current search results (<span id="export-count">0</span> apps)</p>
-				<div class="export-options">
-					<button class="btn btn-primary" onclick="exportToCSV()">Export to CSV</button>
-					<button class="btn btn-primary" onclick="exportToJSON()">Export to JSON</button>
-					<button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
-				</div>
-				<div class="export-preview">
-					<h4>Preview:</h4>
-					<pre id="export-preview"></pre>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<footer class="footer">
 		<div class="container">
-			<p>iPArchive - iOS App Archive</p>
+			<p>iPArchive - iOS IPA Archive</p>
 		</div>
 	</footer>
 
-	<div id="templates" hidden>
-		<div class="entry full">
-			<div class="entry-icon">
-				<img src="$IMG" alt="App icon">
-				<div class="app-badges">
-					<span class="badge badge-os">iOS $MINOS+</span>
-					<span class="badge badge-platform">$PLATFORM</span>
-				</div>
-			</div>
-			<div class="info">
-				<h4>$TITLE</h4>
-				<div><span class="label">Bundle ID:</span> $BUNDLEID</div>
-				<div><span class="label">Version:</span> v$VERSION – $SIZE</div>
-				<div><span class="label">Link:</span> <a href="$URL" rel="noopener noreferrer nofollow" class="download-link">Download IPA</a></div>
-			</div>
-		</div>
-		<div class="entry short">
-			<div class="entry-icon">
-				<img src="$IMG" alt="App icon">
-				<div class="app-badges">
-					<span class="badge badge-os">iOS $MINOS+</span>
-				</div>
-			</div>
-			<div class="info">
-				<h4>$TITLE</h4>
-				<div><span class="label">Bundle ID:</span> $BUNDLEID</div>
-				<div><span class="label">Device:</span> $PLATFORM</div>
-				<div><a class="show-all" onclick="searchBundle($IDX)">Show all versions</a></div>
-			</div>
-		</div>
-		<div class="itunes">
-			<h4>iTunes Info:</h4>
-			<div><span class="label">Genre:</span> $GENRES</div>
-			<div><span class="label">Rating:</span> $RATING</div>
-			<div><span class="label">Advisory:</span> $ADVISORY</div>
-			<br>
-			<div><span class="label">Current Version:</span> <b>$VERSION</b> (last update: $DATE)</div>
-			<div><span class="label">Price:</span> $PRICE</div>
-			<div><span class="label">Link:</span> <a href="$URL" rel="noopener noreferrer nofollow">iTunes</a></div>
-			<div>$IMG</div>
-			<p class="description">$DESCRIPTION</p>
-		</div>
-		<a class="screenshot" href="$REF" target="_blank"><img src="$URL" crossorigin="anonymous"
-				referrerpolicy="no-referrer" alt="App screenshot"></a>
-		<div class="randomAction">
-			<span class="label">Actions:</span>
-			<button class="btn btn-secondary" onclick="searchBundle($IDX, '&random=$IDX')">Show all versions</button>
-			<button class="btn btn-primary" onclick="randomIPA()">Next Random</button>
-		</div>
-	</div>
+	<!-- Templates -->
+    <div id="templates" style="display: none;">
+        <div class="entry" data-idx="$IDX">
+            <div class="entry-icon">
+                <img src="$IMG" alt="$TITLE" onerror="this.src='placeholder.png';">
+                <div class="app-badges">
+                    <span class="badge badge-os">iOS $MINOS+</span>
+                    <span class="badge badge-platform">$PLATFORM</span>
+                </div>
+            </div>
+            <div class="info">
+                <h4>$TITLE</h4>
+                <div><span class="label">Bundle ID:</span> $BUNDLEID</div>
+                <div><span class="label">Version:</span> $VERSION</div>
+                <div><span class="label">Size:</span> $SIZE</div>
+                <div>
+                    <a href="$URL" class="download-link" download>Download $URLNAME</a>
+                </div>
+                <a href="#" onclick="searchBundle($IDX)" class="show-all">Show all versions</a>
+            </div>
+        </div>
+        
+        <div class="full" data-idx="$IDX">
+            <div class="entry-icon">
+                <img src="$IMG" alt="$TITLE" onerror="this.src='placeholder.png';">
+                <div class="app-badges">
+                    <span class="badge badge-os">iOS $MINOS+</span>
+                    <span class="badge badge-platform">$PLATFORM</span>
+                </div>
+            </div>
+            <div class="info">
+                <h4>$TITLE</h4>
+                <div><span class="label">Bundle ID:</span> $BUNDLEID</div>
+                <div><span class="label">Version:</span> $VERSION</div>
+                <div><span class="label">Size:</span> $SIZE</div>
+                <div>
+                    <a href="$URL" class="download-link" download>Download $URLNAME</a>
+                </div>
+                <a href="#" onclick="searchBundle($IDX)" class="show-all">Show all versions</a>
+            </div>
+        </div>
+        
+        <div class="short" data-idx="$IDX">
+            <div class="entry-icon">
+                <img src="$IMG" alt="$TITLE" onerror="this.src='placeholder.png';">
+            </div>
+            <div class="info">
+                <h4>$TITLE</h4>
+                <div><span class="label">Bundle ID:</span> $BUNDLEID</div>
+                <div><span class="label">Version:</span> $VERSION</div>
+                <div>
+                    <a href="$URL" class="download-link" download>Download</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="randomAction">
+            <button class="btn btn-secondary" onclick="randomIPA()">Another Random</button>
+            <button class="btn btn-primary" onclick="searchBundle($IDX, '&random=$IDX')">Show all versions</button>
+        </div>
+        
+        <div class="itunes">
+            <h3>App Store Information</h3>
+            <div><span class="label">Current Version:</span> $VERSION</div>
+            <div><span class="label">Price:</span> $PRICE</div>
+            <div><span class="label">Rating:</span> $RATING</div>
+            <div><span class="label">Content Rating:</span> $ADVISORY</div>
+            <div><span class="label">Release Date:</span> $DATE</div>
+            <div><span class="label">Genres:</span> $GENRES</div>
+            <div><a href="$URL" target="_blank">View on App Store</a></div>
+            $IMG
+            <div class="description">$DESCRIPTION</div>
+        </div>
+        
+        <div class="screenshot">
+            <img src="$URL" alt="Screenshot" loading="lazy">
+        </div>
+    </div>
 
-	<script>loadDB()</script>
+    <script src="script.js"></script>
 </body>
 
 </html>
+
