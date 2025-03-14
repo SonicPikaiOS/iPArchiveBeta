@@ -398,7 +398,7 @@ function setPlistGen() {
             return;
         }
         plistServerUrl = testURL;
-        document.getElementById('overlay').hidden = true;
+        hideOverlay();
         saveConfig();
     });
 }
@@ -411,9 +411,20 @@ function utoa(data) {
     return btoa(unescape(encodeURIComponent(data)));
 }
 
+// Show overlay function
+function showOverlay() {
+    document.getElementById('overlay').style.display = 'flex';
+}
+
+// Hide overlay function
+function hideOverlay() {
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// Modified installIPA function
 function installIPA(idx) {
     if (!plistServerUrl) {
-        document.getElementById('overlay').hidden = false;
+        showOverlay();
         return;
     }
     const thisServerUrl = location.href.replace(location.hash, '');
@@ -434,7 +445,6 @@ function installIPA(idx) {
     while (b64.slice(-1) === '=') {
         b64 = b64.slice(0, -1);
     }
-    // window.open(plistServerUrl + '?d=' + b64);
     const plistUrl = plistServerUrl + '%3Fd%3D' + b64; // url encoded "?d="
     window.open('itms-services://?action=download-manifest&url=' + plistUrl);
 }
