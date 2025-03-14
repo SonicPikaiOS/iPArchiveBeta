@@ -1,18 +1,49 @@
 /* Base styles and variables */
 :root {
+  /* Light theme colors */
   --primary-color: #007aff;
   --primary-dark: #0062cc;
   --secondary-color: #6c757d;
-  --light-color: #f8f9fa;
-  --dark-color: #343a40;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-  --warning-color: #ffc107;
-  --info-color: #17a2b8;
+  --background-color: #f5f5f7;
+  --card-background: #ffffff;
+  --text-color: #333333;
+  --text-secondary: #666666;
   --border-color: #dee2e6;
+  --entry-background: #f8f9fa;
+  --entry-full-background: #f0f7ff;
+  --header-background: #ffffff;
+  --footer-background: #ffffff;
+  --form-background: #ffffff;
+  --results-background: #ffffff;
+  --input-background: #ffffff;
+  --input-border: #dee2e6;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Common variables */
   --border-radius: 8px;
-  --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 2px 5px var(--shadow-color);
   --transition: all 0.3s ease;
+}
+
+/* Dark theme colors */
+.dark-theme {
+  --primary-color: #0a84ff;
+  --primary-dark: #0064d1;
+  --secondary-color: #8c8c8c;
+  --background-color: #121212;
+  --card-background: #1e1e1e;
+  --text-color: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333333;
+  --entry-background: #252525;
+  --entry-full-background: #1a2333;
+  --header-background: #1e1e1e;
+  --footer-background: #1e1e1e;
+  --form-background: #1e1e1e;
+  --results-background: #1e1e1e;
+  --input-background: #2c2c2c;
+  --input-border: #444444;
+  --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Reset and base styles */
@@ -25,10 +56,11 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #f5f5f7;
+  color: var(--text-color);
+  background-color: var(--background-color);
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -57,18 +89,25 @@ img {
 
 /* Header */
 header {
-  background-color: white;
+  background-color: var(--header-background);
   box-shadow: var(--box-shadow);
   padding: 15px 0;
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: background-color 0.3s ease;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 h1 {
@@ -78,6 +117,29 @@ h1 {
   margin: 0;
 }
 
+/* Theme toggle button */
+.btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn-icon:hover {
+  background-color: var(--entry-background);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke: var(--text-color);
+}
+
 /* Main content */
 main {
   padding: 20px 0;
@@ -85,11 +147,12 @@ main {
 
 /* Search form */
 .search-section {
-  background-color: white;
+  background-color: var(--form-background);
   border-radius: var(--border-radius);
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: var(--box-shadow);
+  transition: background-color 0.3s ease;
 }
 
 .search-form {
@@ -113,22 +176,24 @@ main {
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
-  color: var(--dark-color);
+  color: var(--text-color);
 }
 
 .form-control {
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--input-border);
   border-radius: var(--border-radius);
   font-size: 1rem;
   transition: var(--transition);
+  background-color: var(--input-background);
+  color: var(--text-color);
 }
 
 .form-control:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
 }
 
 .checkbox-group {
@@ -171,7 +236,7 @@ main {
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
 }
 
 .btn-primary {
@@ -196,25 +261,13 @@ main {
   border-color: #5a6268;
 }
 
-.btn-install {
-  background-color: var(--success-color);
-  color: white;
-  border-color: var(--success-color);
-  width: 100%;
-  margin-top: 5px;
-}
-
-.btn-install:hover {
-  background-color: #218838;
-  border-color: #218838;
-}
-
 /* Results section */
 .results-section {
-  background-color: white;
+  background-color: var(--results-background);
   border-radius: var(--border-radius);
   padding: 20px;
   box-shadow: var(--box-shadow);
+  transition: background-color 0.3s ease;
 }
 
 .content {
@@ -223,7 +276,7 @@ main {
 
 .content h3 {
   margin-bottom: 20px;
-  color: var(--dark-color);
+  color: var(--text-color);
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 10px;
 }
@@ -233,7 +286,7 @@ main {
   display: flex;
   margin: 15px 0;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--entry-background);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   transition: var(--transition);
@@ -243,11 +296,11 @@ main {
 
 .entry:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--shadow-color);
 }
 
 .entry.full {
-  background-color: #f0f7ff;
+  background-color: var(--entry-full-background);
 }
 
 .entry-icon {
@@ -281,7 +334,7 @@ main {
 
 .label {
   font-weight: 500;
-  color: var(--secondary-color);
+  color: var(--text-secondary);
 }
 
 .show-all {
@@ -293,8 +346,8 @@ main {
 
 /* Single item page */
 .single {
-  background-color: #f0f7ff;
-  border: 1px solid #d1e3ff;
+  background-color: var(--entry-full-background);
+  border: 1px solid var(--border-color);
 }
 
 .randomAction {
@@ -306,11 +359,12 @@ main {
 }
 
 .itunes {
-  background-color: white;
+  background-color: var(--card-background);
   border-radius: var(--border-radius);
   padding: 20px;
   margin: 20px 0;
   box-shadow: var(--box-shadow);
+  transition: background-color 0.3s ease;
 }
 
 .carousel {
@@ -320,7 +374,7 @@ main {
   padding: 10px 0;
   margin: 15px 0;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary-color) var(--light-color);
+  scrollbar-color: var(--primary-color) var(--entry-background);
 }
 
 .carousel::-webkit-scrollbar {
@@ -328,7 +382,7 @@ main {
 }
 
 .carousel::-webkit-scrollbar-track {
-  background: var(--light-color);
+  background: var(--entry-background);
   border-radius: 10px;
 }
 
@@ -348,23 +402,7 @@ main {
   white-space: pre-wrap;
   line-height: 1.6;
   margin-top: 15px;
-  color: #555;
-}
-
-.no-itunes {
-  text-align: center;
-  padding: 20px;
-  color: var(--secondary-color);
-  background-color: #f8f9fa;
-  border-radius: var(--border-radius);
-  margin: 20px 0;
-}
-
-.configure-link {
-  display: inline-block;
-  margin-top: 10px;
-  color: var(--primary-color);
-  font-weight: 500;
+  color: var(--text-secondary);
 }
 
 /* Pagination */
@@ -373,6 +411,29 @@ main {
   justify-content: space-between;
   align-items: center;
   margin: 20px 0;
+}
+
+.shortpage button {
+  background-color: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.shortpage button:hover:not([disabled]) {
+  background-color: var(--entry-background);
+}
+
+.shortpage button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shortpage span {
+  color: var(--text-color);
 }
 
 #pagination {
@@ -391,9 +452,10 @@ main {
   height: 35px;
   padding: 0 10px;
   border-radius: var(--border-radius);
-  background-color: white;
+  background-color: var(--card-background);
   border: 1px solid var(--border-color);
   transition: var(--transition);
+  color: var(--text-color);
 }
 
 #pagination a {
@@ -401,7 +463,7 @@ main {
 }
 
 #pagination a:hover {
-  background-color: var(--light-color);
+  background-color: var(--entry-background);
   text-decoration: none;
 }
 
@@ -411,55 +473,15 @@ main {
   border-color: var(--primary-color);
 }
 
-/* Overlay and modal */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.install-modal {
-  background-color: white;
-  border-radius: var(--border-radius);
-  padding: 25px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.install-modal h3 {
-  color: var(--primary-color);
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
-}
-
-.install-modal p {
-  margin-bottom: 20px;
-}
-
-.install-modal .form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
 /* Footer */
 .footer {
-  background-color: white;
+  background-color: var(--footer-background);
   padding: 20px 0;
   text-align: center;
   margin-top: 40px;
   border-top: 1px solid var(--border-color);
-  color: var(--secondary-color);
+  color: var(--text-secondary);
+  transition: background-color 0.3s ease;
 }
 
 /* Responsive adjustments */
@@ -482,11 +504,6 @@ main {
     margin-bottom: 15px;
     flex-direction: row;
     gap: 15px;
-  }
-  
-  .btn-install {
-    width: auto;
-    margin-top: 0;
   }
   
   .randomAction {
