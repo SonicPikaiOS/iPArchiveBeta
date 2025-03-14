@@ -137,7 +137,7 @@
 		</div>
 	</div>
 
-	<div id="overlay" class="overlay" hidden>
+	<div id="overlay" class="overlay" style="display: none;">
 		<div id="installMsg" class="install-modal">
 			<h3>Install on device</h3>
 			<p>
@@ -153,13 +153,59 @@
 				</div>
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary">Save</button>
-					<button type="button" class="btn btn-secondary" onclick="document.getElementById('overlay').hidden=true">Cancel</button>
+					<button type="button" class="btn btn-secondary" onclick="hideOverlay()">Cancel</button>
 				</div>
 			</form>
 		</div>
 	</div>
 
-	<script>loadDB()</script>
+	<script>
+		// Make sure overlay is hidden on page load
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('overlay').style.display = 'none';
+		});
+		
+		// Function to show overlay
+		function showOverlay() {
+			document.getElementById('overlay').style.display = 'flex';
+		}
+		
+		// Function to hide overlay
+		function hideOverlay() {
+			document.getElementById('overlay').style.display = 'none';
+		}
+		
+		// Modified installIPA function to show overlay
+		function installIPA(idx) {
+			if (!plistServerUrl) {
+				showOverlay();
+				return;
+			}
+			// Rest of the original installIPA function
+			const thisServerUrl = location.href.replace(location.hash, '');
+			const entry = entryToDict(DB[idx]);
+			const json = JSON.stringify({
+				u: validUrl(entry.ipa_url),
+				n: entry.title,
+				b: entry.bundleId,
+				v: entry.version.split(' ')[0],
+				i: urlWithSlash(thisServerUrl) + entry.img_url,
+			}, null, 0)
+			var b64 = '';
+			try {
+				b64 = btoa(json);
+			} catch (error) {
+				b64 = utoa(json);
+			}
+			while (b64.slice(-1) === '=') {
+				b64 = b64.slice(0, -1);
+			}
+			const plistUrl = plistServerUrl + '%3Fd%3D' + b64; // url encoded "?d="
+			window.open('itms-services://?action=download-manifest&url=' + plistUrl);
+		}
+		
+		loadDB();
+	</script>
 </body>
 
 </html>
