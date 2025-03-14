@@ -2,116 +2,164 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <title>iPArchive</title>
-    <link rel="shortcut icon" href="./favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-    <link rel="stylesheet" href="style.css">
-    <script src='script.js'></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0">
+	<meta name="referrer" content="no-referrer">
+	<title>iPArchive</title>
+	<link rel="shortcut icon" href="./favicon.ico">
+	<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css">
+	<script src='script.js'></script>
 </head>
 
 <body>
-    <button class="random-btn" onclick="randomIPA()">Random</button>
-    <h1>iPArchive</h1>
-    <form onsubmit="event.preventDefault(); searchIPA(); return false;" autocomplete="off" class="search-form">
-        <input id="page" hidden>
-        <input id="minid" hidden>
-        <div class="form-row">
-            <label for="search">Search: <input id="search" placeholder="Search"></label>
-            <label for="bundleid">BundleId: <input id="bundleid" placeholder="com.gameloft."></label>
-            <label for="unique">Unique: <input id="unique" type="checkbox" checked></label>
-        </div>
-        <div class="form-row">
-            <label for="minos">min OS: <input id="minos" placeholder="6.1.3"></label>
-            <label for="maxos">max OS: <input id="maxos" placeholder="8.3"></label>
-            <label for="device">Device: <select id="device">
-                    <option value="">Any</option>
-                    <option value="1">iPhone</option>
-                    <option value="2">iPad</option>
-                    <option value="3">TV</option>
-                    <option value="4">Watch</option>
-                </select></label>
-            <button type="submit" class="search-button">Search</button>
-        </div>
-    </form>
+	<header>
+		<div class="container">
+			<div class="header-content">
+				<h1>iPArchive</h1>
+				<button class="btn btn-primary" onclick="randomIPA()">Random App</button>
+			</div>
+		</div>
+	</header>
 
-    <div id="content" class="content">JavaScript disabled?</div>
+	<main class="container">
+		<section class="search-section">
+			<form class="search-form" onsubmit="event.preventDefault(); searchIPA(); return false;" autocomplete="off">
+				<input id="page" hidden>
+				<input id="minid" hidden>
+				
+				<div class="form-row">
+					<div class="form-group">
+						<label for="search">Search</label>
+						<input id="search" class="form-control" placeholder="App name or keyword">
+					</div>
+					
+					<div class="form-group">
+						<label for="bundleid">Bundle ID</label>
+						<input id="bundleid" class="form-control" placeholder="com.gameloft.">
+					</div>
+				</div>
+				
+				<div class="form-row">
+					<div class="form-group">
+						<label for="minos">Min OS</label>
+						<input id="minos" class="form-control" placeholder="6.1.3">
+					</div>
+					
+					<div class="form-group">
+						<label for="maxos">Max OS</label>
+						<input id="maxos" class="form-control" placeholder="8.3">
+					</div>
+					
+					<div class="form-group">
+						<label for="device">Device</label>
+						<select id="device" class="form-control">
+							<option value="">Any</option>
+							<option value="1">iPhone</option>
+							<option value="2">iPad</option>
+							<option value="3">TV</option>
+							<option value="4">Watch</option>
+						</select>
+					</div>
+					
+					<div class="form-group checkbox-group">
+						<label for="unique" class="checkbox-label">
+							<input id="unique" type="checkbox" checked>
+							<span>Unique</span>
+						</label>
+					</div>
+				</div>
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Search</button>
+				</div>
+			</form>
+		</section>
 
-    <div id="templates" hidden>
-        <div class="entry full">
-            <div class="entry-image">
-                <img src="$IMG" alt="App icon">
-                <button class="install-btn" onclick="installIPA($IDX)">Install</button>
-            </div>
-            <div class="info">
-                <h4>$TITLE</h4>
-                <div>BundleId: $BUNDLEID</div>
-                <div>Version: v$VERSION – $SIZE</div>
-                <div>Device: $PLATFORM</div>
-                <div>Minimum OS: $MINOS</div>
-                <div>Link: <a href="$URL" rel="noopener noreferrer nofollow">$URLNAME</a></div>
-            </div>
-        </div>
-        <div class="entry short">
-            <div class="entry-image"><img src="$IMG" alt="App icon"></div>
-            <div class="info">
-                <h4>$TITLE</h4>
-                <div>BundleId: $BUNDLEID</div>
-                <div>Device: $PLATFORM</div>
-                <div>Minimum OS: $MINOS</div>
-                <div><a class="show-all" onclick="searchBundle($IDX)">Show all</a></div>
-            </div>
-        </div>
-        <div class="itunes">
-            <h4>iTunes Info:</h4>
-            <div>Genre: $GENRES</div>
-            <div>Rating: $RATING</div>
-            <div>Advisory: $ADVISORY</div>
-            <br>
-            <div>Current Version: <b>$VERSION</b> (last update: $DATE)</div>
-            <div>Price: $PRICE</div>
-            <div>Link: <a href="$URL" rel="noopener noreferrer nofollow">iTunes</a></div>
-            <div>$IMG</div>
-            <p>$DESCRIPTION</p>
-        </div>
-        <a class="screenshot" href="$REF" target="_blank"><img src="$URL" crossorigin="anonymous"
-                referrerpolicy="no-referrer" alt="App screenshot"></a>
-        <div class="randomAction">
-            Actions:
-            <button onclick="searchBundle($IDX, '&random=$IDX')">Show all versions</button>
-            <button onclick="randomIPA()">Next Random</button>
-        </div>
-        <div class="no-itunes">
-            <p>iTunes search disabled. No plist server configured.</p>
-            <a onclick="installIPA()">Configure now</a>
-        </div>
-    </div>
+		<section class="results-section">
+			<div id="content" class="content">JavaScript disabled?</div>
+		</section>
+	</main>
 
-    <div id="overlay" hidden>
-        <div id="installMsg">
-            <h3>Install on device</h3>
-            <p>
-                Unfortunately, this function is not possible with static HTML+JS.
-                You must provide a plist generator URL.
-                See <a href="Readme.md" target="_blank">Readme</a> file for further instructions on how to set up such a
-                service.
-            </p>
-            <form onsubmit="event.preventDefault(); setPlistGen(); return false;" autocomplete="off">
-                <div class="form-group">
-                    <label for="plistServer">Generator URL:</label>
-                    <input id="plistServer" placeholder="http://192.168.0.1/">
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="primary-btn">Save</button>
-                    <button type="button" class="secondary-btn" onclick="document.getElementById('overlay').hidden=true">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
+	<footer class="footer">
+		<div class="container">
+			<p>iPArchive - iOS App Archive</p>
+		</div>
+	</footer>
 
-    <script>loadDB()</script>
+	<div id="templates" hidden>
+		<div class="entry full">
+			<div class="entry-icon">
+				<img src="$IMG" alt="App icon">
+				<button class="btn btn-install" onclick="installIPA($IDX)">Install</button>
+			</div>
+			<div class="info">
+				<h4>$TITLE</h4>
+				<div><span class="label">Bundle ID:</span> $BUNDLEID</div>
+				<div><span class="label">Version:</span> v$VERSION – $SIZE</div>
+				<div><span class="label">Device:</span> $PLATFORM</div>
+				<div><span class="label">Minimum OS:</span> $MINOS</div>
+				<div><span class="label">Link:</span> <a href="$URL" rel="noopener noreferrer nofollow">$URLNAME</a></div>
+			</div>
+		</div>
+		<div class="entry short">
+			<div class="entry-icon"><img src="$IMG" alt="App icon"></div>
+			<div class="info">
+				<h4>$TITLE</h4>
+				<div><span class="label">Bundle ID:</span> $BUNDLEID</div>
+				<div><span class="label">Device:</span> $PLATFORM</div>
+				<div><span class="label">Minimum OS:</span> $MINOS</div>
+				<div><a class="show-all" onclick="searchBundle($IDX)">Show all</a></div>
+			</div>
+		</div>
+		<div class="itunes">
+			<h4>iTunes Info:</h4>
+			<div><span class="label">Genre:</span> $GENRES</div>
+			<div><span class="label">Rating:</span> $RATING</div>
+			<div><span class="label">Advisory:</span> $ADVISORY</div>
+			<br>
+			<div><span class="label">Current Version:</span> <b>$VERSION</b> (last update: $DATE)</div>
+			<div><span class="label">Price:</span> $PRICE</div>
+			<div><span class="label">Link:</span> <a href="$URL" rel="noopener noreferrer nofollow">iTunes</a></div>
+			<div>$IMG</div>
+			<p class="description">$DESCRIPTION</p>
+		</div>
+		<a class="screenshot" href="$REF" target="_blank"><img src="$URL" crossorigin="anonymous"
+				referrerpolicy="no-referrer" alt="App screenshot"></a>
+		<div class="randomAction">
+			<span class="label">Actions:</span>
+			<button class="btn btn-secondary" onclick="searchBundle($IDX, '&random=$IDX')">Show all versions</button>
+			<button class="btn btn-primary" onclick="randomIPA()">Next Random</button>
+		</div>
+		<div class="no-itunes">
+			<p>iTunes search disabled. No plist server configured.</p>
+			<a class="configure-link" onclick="installIPA()">Configure now</a>
+		</div>
+	</div>
+
+	<div id="overlay" class="overlay" hidden>
+		<div id="installMsg" class="install-modal">
+			<h3>Install on device</h3>
+			<p>
+				Unfortunately, this function is not possible with static HTML+JS.
+				You must provide a plist generator URL.
+				See <a href="Readme.md" target="_blank">Readme</a> file for further instructions on how to set up such a
+				service.
+			</p>
+			<form onsubmit="event.preventDefault(); setPlistGen(); return false;" autocomplete="off">
+				<div class="form-group">
+					<label for="plistServer">Generator URL:</label>
+					<input id="plistServer" class="form-control" placeholder="http://192.168.0.1/">
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">Save</button>
+					<button type="button" class="btn btn-secondary" onclick="document.getElementById('overlay').hidden=true">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>loadDB()</script>
 </body>
 
 </html>
