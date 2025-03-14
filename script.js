@@ -416,6 +416,7 @@ function validUrl(url) {
 // Find the entryToDict function and modify the img_url line to ensure it's using the correct path
 function entryToDict(entry) {
   const pk = entry[0]
+  const padded = pk.toString().padStart(4, "0") // Ensure at least 4 digits
   return {
     pk: pk,
     platform: entry[1],
@@ -427,8 +428,8 @@ function entryToDict(entry) {
     pathName: entry[7],
     size: entry[8],
     ipa_url: baseUrls[entry[6]] + "/" + entry[7],
-    // Fix the image path to ensure it's correct
-    img_url: "./data/" + Math.floor(pk / 1000) + "/" + pk + ".jpg",
+    // Fix the image path to match the GitHub repository structure
+    img_url: `/data/${Math.floor(pk / 1000)}/${pk}.jpg`,
   }
 }
 
