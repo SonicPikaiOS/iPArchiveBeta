@@ -6,36 +6,6 @@ var isInitial = true
 var previousSearch = ""
 NodeList.prototype.forEach = Array.prototype.forEach // fix for < iOS 9.3
 
-// Add this function near the top of the file, after the variable declarations
-function createPlaceholderIcon() {
-  // Create a simple colored square with text as a placeholder
-  const canvas = document.createElement("canvas")
-  canvas.width = 80
-  canvas.height = 80
-  const ctx = canvas.getContext("2d")
-
-  // Fill background
-  ctx.fillStyle = "#f0f0f0"
-  ctx.fillRect(0, 0, 80, 80)
-
-  // Add border
-  ctx.strokeStyle = "#cccccc"
-  ctx.lineWidth = 1
-  ctx.strokeRect(0, 0, 80, 80)
-
-  // Add text
-  ctx.fillStyle = "#666666"
-  ctx.font = "12px system-ui, -apple-system, sans-serif"
-  ctx.textAlign = "center"
-  ctx.textBaseline = "middle"
-  ctx.fillText("No Icon", 40, 40)
-
-  return canvas.toDataURL("image/png")
-}
-
-// Create the placeholder once when the script loads
-const PLACEHOLDER_ICON = createPlaceholderIcon()
-
 /*
  * Theme Management
  */
@@ -416,7 +386,6 @@ function validUrl(url) {
 // Find the entryToDict function and modify the img_url line to ensure it's using the correct path
 function entryToDict(entry) {
   const pk = entry[0]
-  const padded = pk.toString().padStart(4, "0") // Ensure at least 4 digits
   return {
     pk: pk,
     platform: entry[1],
@@ -428,8 +397,8 @@ function entryToDict(entry) {
     pathName: entry[7],
     size: entry[8],
     ipa_url: baseUrls[entry[6]] + "/" + entry[7],
-    // Fix the image path to match the GitHub repository structure
-    img_url: `/data/${Math.floor(pk / 1000)}/${pk}.jpg`,
+    // Use the original image path format that was working before
+    img_url: "data/" + Math.floor(pk / 1000) + "/" + pk + ".jpg",
   }
 }
 
@@ -442,7 +411,6 @@ function entriesToStr(templateType, data) {
     rv += renderTemplate(template, {
       $IDX: data[i],
       $IMG: entry.img_url,
-      $PLACEHOLDER: PLACEHOLDER_ICON,
       $TITLE: (entry.title || "?").replace("<", "&lt;"),
       $VERSION: entry.version,
       $BUNDLEID: entry.bundleId,
